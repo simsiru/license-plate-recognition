@@ -1,10 +1,7 @@
 import cv2
 import numpy as np
-import psycopg2 as pg
 import re
 import easyocr
-import io
-import pandas as pd
 
 
 def draw_bbox_tracking(
@@ -119,66 +116,3 @@ class EasyocrNumberPlateRecognition:
             text = None
 
         return plate_num
-
-
-class DBInterface:
-    """Class for interface with PostgreSQL database"""
-
-    def __init__(
-        self,
-        password="148635",
-        username="postgres",
-        hostname="localhost",
-        database="face_recognition",
-        port_id=5432,
-    ):
-        self.host = hostname
-        self.dbname = database
-        self.username = username
-        self.password = password
-        self.port = port_id
-
-    def execute_sql_script(
-        self, sql_script, values_insert=None, return_result=False
-    ):
-        conn = None
-        cur = None
-        df = None
-
-        try:
-            with pg.connect(
-                host=self.host,
-                dbname=self.dbname,
-                user=self.username,
-                password=self.password,
-                port=self.port,
-            ) as conn:
-
-                if return_result:
-                    df = pd.read_sql_query(sql_script, conn)
-                else:
-                    with conn.cursor() as cur:
-                        if values_insert is not None:
-                            cur.execute(sql_script, values_insert)
-                        else:
-                            cur.execute(sql_script)
-
-        except Exception as error:
-            print(error)
-        finally:
-            if conn is not None:
-                conn.close()
-
-        if return_result:
-            return df
-
-    def numpy_array_to_bytes(self, arr):
-        out = io.BytesIO()
-        np.save(out, arr)
-        out.seek(0)
-        return out.read()
-
-    def bytes_to_numpy_array(self, text):
-        out = io.BytesIO(text)
-        out.seek(0)
-        return np.load(out)

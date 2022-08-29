@@ -115,7 +115,7 @@ def license_plate_recognition(
     )
 
 
-def yolo_object_tracking_with_apps(args: argparse.Namespace) -> None:
+def license_plate_recognition_main(args: argparse.Namespace) -> None:
     with open("yolo_data/mscoco_classes.txt") as f:
         classes = f.read().splitlines()
 
@@ -243,4 +243,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    yolo_object_tracking_with_apps(args)
+    license_plate_recognition_main(args)
